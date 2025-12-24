@@ -38,45 +38,35 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
   console.log("New estimate request received:");
   console.log(JSON.stringify(data, null, 2));
 
-  // TODO: Implement submission to Google Sheet.
-  // This would typically involve using the Google Sheets API.
-  // You would need to set up a service account or OAuth 2.0 credentials
-  // and use a library like 'googleapis'.
-  //
-  // An alternative is to use a Google Apps Script Web App as an endpoint.
-  // You could POST to the Web App URL, and the script would append a row to your sheet.
-  //
-  // Example using an Apps Script Web App:
-  //
-  // try {
-  //   if (!process.env.GOOGLE_SHEET_WEB_APP_URL) {
-  //     throw new Error("Google Sheet Web App URL is not configured.");
-  //   }
-  //   const response = await fetch(process.env.GOOGLE_SHEET_WEB_APP_URL, {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({
-  //         timestamp: new Date().toISOString(),
-  //         ...data.contact,
-  //         description: data.description,
-  //         laborCost: data.estimate?.laborCost,
-  //         materialCost: data.estimate?.materialCost,
-  //         totalCost: data.estimate?.totalCost,
-  //     }),
-  //   });
-  //
-  //   if (!response.ok) {
-  //     const errorBody = await response.text();
-  //     throw new Error(`Failed to submit to Google Sheet: ${errorBody}`);
-  //   }
-  //
-  // } catch (error) {
-  //   console.error("Google Sheet submission error:", error);
-  //   return { success: false, message: 'Failed to save request.' };
-  // }
-
-  // For this example, we'll simulate a network delay and a successful submission.
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  try {
+    if (!process.env.GOOGLE_SHEET_WEB_APP_URL) {
+      console.warn("Google Sheet Web App URL is not configured. Skipping submission.");
+      // To allow the demo to work without a sheet, we'll simulate success.
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return { success: true, message: "Request submitted successfully (simulation)." };
+    }
+    const response = await fetch(process.env.GOOGLE_SHEET_WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+          timestamp: new Date().toISOString(),
+          ...data.contact,
+          description: data.description,
+          laborCost: data.estimate?.laborCost,
+          materialCost: data.estimate?.materialCost,
+          totalCost: data.estimate?.totalCost,
+      }),
+    });
+ 
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Failed to submit to Google Sheet: ${errorBody}`);
+    }
+ 
+  } catch (error) {
+    console.error("Google Sheet submission error:", error);
+    return { success: false, message: 'Failed to save request.' };
+  }
 
   return { success: true, message: "Request submitted successfully." };
 }
