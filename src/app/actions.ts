@@ -51,11 +51,11 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
       Email: data.contact.email,
       Phone: data.contact.phone,
       Description: data.description,
-      LaborCost: data.estimate?.laborCost,
-      MaterialCost: data.estimate?.materialCost,
-      TotalCost: data.estimate?.totalCost,
-      TimeEstimate: data.estimate?.timeEstimate,
-      ImageUrl: data.imageDataUri,
+      LaborCost: data.estimate?.laborCost ?? '',
+      MaterialCost: data.estimate?.materialCost ?? '',
+      TotalCost: data.estimate?.totalCost ?? '',
+      TimeEstimate: data.estimate?.timeEstimate ?? '',
+      ImageUrl: data.imageDataUri ?? '',
   };
 
   try {
@@ -63,6 +63,12 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
       method: 'POST',
       body: JSON.stringify(payload),
     });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Google Sheet submission error response:", errorText);
+        throw new Error(`Google Sheets API responded with status: ${response.status}`);
+    }
 
     const result = await response.json();
 
