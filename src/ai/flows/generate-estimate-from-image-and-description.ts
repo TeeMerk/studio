@@ -24,6 +24,7 @@ const GenerateEstimateOutputSchema = z.object({
   laborCost: z.number().describe('The estimated labor cost for the project.'),
   materialCost: z.number().describe('The estimated material cost for the project.'),
   totalCost: z.number().describe('The total estimated cost for the project.'),
+  timeEstimate: z.string().describe('The estimated time to complete the project (e.g., "2-3 days", "1 week").'),
 });
 export type GenerateEstimateOutput = z.infer<typeof GenerateEstimateOutputSchema>;
 
@@ -39,12 +40,12 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateEstimateOutputSchema},
   prompt: `You are an expert estimator for construction and home repair projects. You are provided with an image and a description of the work needed.
   You will use this information, along with your knowledge of local labor and material costs for the 75601 zip code, to generate an estimate for the project.
-  The estimate should be broken down into labor cost and material cost.
+  The estimate should be broken down into labor cost, material cost, and a time estimate for completion.
 
   Description: {{{description}}}
   Photo: {{media url=photoDataUri}}
 
-  Respond with JSON that contains the laborCost, materialCost and totalCost.
+  Respond with JSON that contains the laborCost, materialCost, totalCost, and timeEstimate.
 `,
 });
 

@@ -26,6 +26,7 @@ type SubmissionData = {
     phone: string;
   };
   description: string;
+  imageDataUri: string | null;
   estimate: GenerateEstimateOutput | null;
 }
 
@@ -58,6 +59,7 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
           laborCost: data.estimate?.laborCost,
           materialCost: data.estimate?.materialCost,
           totalCost: data.estimate?.totalCost,
+          imageUrl: data.imageDataUri, // Sending the image data URI
       }),
       // Apps Script web apps do not have CORS headers, so we use 'no-cors' mode.
       // The request will be successful, but we won't be able to read the response body client-side.

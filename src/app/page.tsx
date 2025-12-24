@@ -13,6 +13,7 @@ import {
   CheckCircle,
   AlertCircle,
   ArrowLeft,
+  Clock,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -119,10 +120,8 @@ export default function Home() {
       const submissionData = {
         contact: data,
         description,
+        imageDataUri,
         estimate: estimateResult,
-        // In a real app, you would upload the image to a storage service
-        // and save the URL instead of the data URI.
-        // For this example, we will not send the large data URI.
       };
       const result = await submitRequest(submissionData);
       if (result.success) {
@@ -202,7 +201,7 @@ export default function Home() {
             ${estimateResult?.totalCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex items-center gap-4 p-4 border rounded-lg">
             <div className="p-3 bg-secondary rounded-full">
               <Wrench className="w-6 h-6 text-secondary-foreground" />
@@ -222,6 +221,17 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">Material Cost</p>
               <p className="text-xl font-semibold">
                 ${estimateResult?.materialCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 p-4 border rounded-lg">
+            <div className="p-3 bg-secondary rounded-full">
+              <Clock className="w-6 h-6 text-secondary-foreground" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Time Estimate</p>
+              <p className="text-xl font-semibold">
+                {estimateResult?.timeEstimate}
               </p>
             </div>
           </div>
