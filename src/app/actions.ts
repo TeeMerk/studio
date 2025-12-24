@@ -10,7 +10,7 @@ type GenerateEstimateResult = {
 
 export async function generateEstimate(input: GenerateEstimateInput): Promise<GenerateEstimateResult> {
   try {
-    const output = await generateEstimateFromImageAndDescription(input);
+    const output = await generateEstimateFromImageAnd-description(input);
     return { success: true, data: output };
   } catch (error) {
     console.error("Error generating estimate:", error);
@@ -38,27 +38,25 @@ type SubmitRequestResult = {
 export async function submitRequest(data: SubmissionData): Promise<SubmitRequestResult> {
   console.log("New estimate request received, preparing to submit...");
 
-  const webAppUrl = process.env.GOOGLE_SHEET_WEB_APP_URL;
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbzb66Sg_ZUid8mUvDsNKt9ldz3_V_QM5wWKYDCoFiM-iAd5wm6hBBZ14mJMghYMpw0i4g/exec";
   
   if (!webAppUrl) {
-    console.warn("Google Sheet Web App URL is not configured. Skipping submission.");
-    // This provides a fallback for local development if the URL isn't set.
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    return { success: true, message: "Request submitted successfully (simulation)." };
+    console.error("Google Sheet Web App URL is not configured. Submission failed.");
+    return { success: false, message: "Application is not configured for submissions." };
   }
 
-  // Explicitly map the data to ensure the keys match what the Apps Script expects.
+  // Explicitly map the data to ensure the keys EXACTLY match what the Apps Script expects (case-sensitive).
   const payload = {
-      timestamp: new Date().toISOString(),
-      name: data.contact.name,
-      email: data.contact.email,
-      phone: data.contact.phone,
-      description: data.description,
-      laborCost: data.estimate?.laborCost,
-      materialCost: data.estimate?.materialCost,
-      totalCost: data.estimate?.totalCost,
-      timeEstimate: data.estimate?.timeEstimate,
-      imageUrl: data.imageDataUri,
+      Timestamp: new Date().toISOString(),
+      Name: data.contact.name,
+      Email: data.contact.email,
+      Phone: data.contact.phone,
+      Description: data.description,
+      LaborCost: data.estimate?.laborCost,
+      MaterialCost: data.estimate?.materialCost,
+      TotalCost: data.estimate?.totalCost,
+      TimeEstimate: data.estimate?.timeEstimate,
+      ImageUrl: data.imageDataUri,
   };
 
   try {
@@ -68,14 +66,17 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
+      // We remove 'no-cors' to be able to read the response from the script.
     });
 
+    // The script returns JSON, so we parse it.
     const result = await response.json();
 
     if (result.result === 'success') {
       console.log("Successfully submitted to Google Sheet.");
       return { success: true, message: "Request submitted successfully." };
     } else {
+      // If the script returns an error, log it.
       console.error("Google Sheet submission failed:", result.error);
       return { success: false, message: `Failed to save request: ${result.error}` };
     }
