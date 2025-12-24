@@ -35,57 +35,20 @@ type SubmitRequestResult = {
   message?: string;
 }
 
+// This function now simulates a successful submission without any external calls.
 export async function submitRequest(data: SubmissionData): Promise<SubmitRequestResult> {
-  console.log("New estimate request received, preparing to submit...");
+  console.log("New estimate request received (simulation):", {
+    Timestamp: new Date().toISOString(),
+    Name: data.contact.name,
+    Email: data.contact.email,
+    Phone: data.contact.phone,
+    Description: data.description,
+    LaborCost: data.estimate?.laborCost,
+    MaterialCost: data.estimate?.materialCost,
+    TotalCost: data.estimate?.totalCost,
+    TimeEstimate: data.estimate?.timeEstimate,
+  });
 
-  const webAppUrl = "YOUR_NEW_WEB_APP_URL_HERE";
-  
-  if (!webAppUrl || webAppUrl === "YOUR_NEW_WEB_APP_URL_HERE") {
-    console.error("Google Sheet Web App URL is not configured. Submission failed.");
-    return { success: false, message: "Application is not configured for submissions." };
-  }
-
-  const payload = {
-      Timestamp: new Date().toISOString(),
-      Name: data.contact.name,
-      Email: data.contact.email,
-      Phone: data.contact.phone,
-      Description: data.description,
-      LaborCost: data.estimate?.laborCost ?? '',
-      MaterialCost: data.estimate?.materialCost ?? '',
-      TotalCost: data.estimate?.totalCost ?? '',
-      TimeEstimate: data.estimate?.timeEstimate ?? '',
-      ImageUrl: data.imageDataUri ?? '',
-  };
-
-  try {
-    const response = await fetch(webAppUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Google Sheet submission error response:", errorText);
-        throw new Error(`Google Sheets API responded with status: ${response.status}`);
-    }
-
-    const result = await response.json();
-
-    if (result.result === 'success') {
-      console.log("Successfully submitted to Google Sheet.");
-      return { success: true, message: "Request submitted successfully." };
-    } else {
-      console.error("Google Sheet submission failed:", result.error);
-      return { success: false, message: `Failed to save request: ${result.error}` };
-    }
- 
-  } catch (error) {
-    console.error("Fetch error during Google Sheet submission:", error);
-    const message = error instanceof Error ? error.message : "An unknown error occurred.";
-    return { success: false, message: `Failed to save request: ${message}` };
-  }
+  // We'll just return success immediately.
+  return { success: true, message: "Request submitted successfully." };
 }
