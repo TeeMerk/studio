@@ -47,8 +47,9 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
     MaterialCost: data.estimate?.materialCost,
     TotalCost: data.estimate?.totalCost,
     TimeEstimate: data.estimate?.timeEstimate,
+    ImageUrl: data.imageDataUri ? 'Image included' : 'No image',
   });
 
-  // We'll just return success immediately.
+  // We'll just return success immediately to simulate a successful submission.
   return { success: true, message: "Request submitted successfully." };
 }
