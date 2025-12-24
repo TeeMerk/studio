@@ -45,7 +45,6 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
     return { success: false, message: "Application is not configured for submissions." };
   }
 
-  // Explicitly map the data to ensure the keys EXACTLY match what the Apps Script expects (case-sensitive).
   const payload = {
       Timestamp: new Date().toISOString(),
       Name: data.contact.name,
@@ -62,21 +61,15 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
   try {
     const response = await fetch(webAppUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(payload),
-      // We remove 'no-cors' to be able to read the response from the script.
     });
 
-    // The script returns JSON, so we parse it.
     const result = await response.json();
 
     if (result.result === 'success') {
       console.log("Successfully submitted to Google Sheet.");
       return { success: true, message: "Request submitted successfully." };
     } else {
-      // If the script returns an error, log it.
       console.error("Google Sheet submission failed:", result.error);
       return { success: false, message: `Failed to save request: ${result.error}` };
     }
