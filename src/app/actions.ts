@@ -42,7 +42,7 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
   
   if (!webAppUrl) {
     console.warn("Google Sheet Web App URL is not configured. Skipping submission.");
-    // Simulate a successful submission for local development without a URL
+    // This provides a fallback for local development if the URL isn't set.
     await new Promise(resolve => setTimeout(resolve, 1500));
     return { success: true, message: "Request submitted successfully (simulation)." };
   }
@@ -57,6 +57,7 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
       laborCost: data.estimate?.laborCost,
       materialCost: data.estimate?.materialCost,
       totalCost: data.estimate?.totalCost,
+      timeEstimate: data.estimate?.timeEstimate,
       imageUrl: data.imageDataUri,
   };
 
