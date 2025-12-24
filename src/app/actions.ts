@@ -10,7 +10,7 @@ type GenerateEstimateResult = {
 
 export async function generateEstimate(input: GenerateEstimateInput): Promise<GenerateEstimateResult> {
   try {
-    const output = await generateEstimateFromImageAnd-description(input);
+    const output = await generateEstimateFromImageAndDescription(input);
     return { success: true, data: output };
   } catch (error) {
     console.error("Error generating estimate:", error);
