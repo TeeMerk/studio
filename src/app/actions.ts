@@ -48,19 +48,25 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
       await new Promise(resolve => setTimeout(resolve, 1500));
       return { success: true, message: "Request submitted successfully (simulation)." };
     }
+
+    const payload = {
+        timestamp: new Date().toISOString(),
+        name: data.contact.name,
+        email: data.contact.email,
+        phone: data.contact.phone,
+        description: data.description,
+        laborCost: data.estimate?.laborCost,
+        materialCost: data.estimate?.materialCost,
+        totalCost: data.estimate?.totalCost,
+        imageUrl: data.imageDataUri,
+    };
     
     const response = await fetch(webAppUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-          timestamp: new Date().toISOString(),
-          ...data.contact,
-          description: data.description,
-          laborCost: data.estimate?.laborCost,
-          materialCost: data.estimate?.materialCost,
-          totalCost: data.estimate?.totalCost,
-          imageUrl: data.imageDataUri, // Sending the image data URI
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
       // Apps Script web apps do not have CORS headers, so we use 'no-cors' mode.
       // The request will be successful, but we won't be able to read the response body client-side.
       // This is fine since our script returns a simple success/error JSON that we don't need to process in the app.
