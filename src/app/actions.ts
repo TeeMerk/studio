@@ -38,9 +38,9 @@ type SubmitRequestResult = {
 export async function submitRequest(data: SubmissionData): Promise<SubmitRequestResult> {
   console.log("New estimate request received, preparing to submit...");
 
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbzb66Sg_ZUid8mUvDsNKt9ldz3_V_QM5wWKYDCoFiM-iAd5wm6hBBZ14mJMghYMpw0i4g/exec";
+  const webAppUrl = "YOUR_NEW_WEB_APP_URL_HERE";
   
-  if (!webAppUrl) {
+  if (!webAppUrl || webAppUrl === "YOUR_NEW_WEB_APP_URL_HERE") {
     console.error("Google Sheet Web App URL is not configured. Submission failed.");
     return { success: false, message: "Application is not configured for submissions." };
   }
@@ -61,6 +61,9 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
   try {
     const response = await fetch(webAppUrl, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(payload),
     });
 
