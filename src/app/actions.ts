@@ -44,7 +44,6 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
     
     if (!webAppUrl) {
       console.warn("Google Sheet Web App URL is not configured. Skipping submission.");
-      // To allow the demo to work without a sheet, we'll simulate success.
       await new Promise(resolve => setTimeout(resolve, 1500));
       return { success: true, message: "Request submitted successfully (simulation)." };
     }
@@ -61,21 +60,10 @@ export async function submitRequest(data: SubmissionData): Promise<SubmitRequest
         imageUrl: data.imageDataUri,
     };
     
-    const response = await fetch(webAppUrl, {
+    await fetch(webAppUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-      // Apps Script web apps do not have CORS headers, so we use 'no-cors' mode.
-      // The request will be successful, but we won't be able to read the response body client-side.
-      // This is fine since our script returns a simple success/error JSON that we don't need to process in the app.
-      mode: 'no-cors', 
+      body: JSON.stringify(payload)
     });
- 
-    // In 'no-cors' mode, response.ok will be false and status will be 0, so we can't check it.
-    // We will assume success if the fetch doesn't throw an error.
-    // The Google Apps Script itself handles error logging.
  
   } catch (error) {
     console.error("Google Sheet submission error:", error);
